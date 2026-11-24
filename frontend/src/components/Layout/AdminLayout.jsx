@@ -71,6 +71,18 @@ export default function AdminLayout() {
               <span>Open Student Portal</span>
             </Link>
           </div>
+
+          {/* MongoDB Atlas Live Status */}
+          <div className="mx-2 mt-4 p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div className="min-w-0">
+              <div className="text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
+                <span>🍃 MongoDB Atlas</span>
+                <span className="text-[9px] px-1.5 py-0.2 bg-emerald-800/70 text-emerald-200 rounded font-semibold">Active</span>
+              </div>
+              <div className="text-[10px] text-emerald-400/80 font-mono truncate">cluster0.1bx8exf</div>
+            </div>
+          </div>
         </nav>
 
         {/* User Footer */}

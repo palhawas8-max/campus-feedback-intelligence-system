@@ -23,9 +23,13 @@ _DOMAIN_CORPUS = [
 @lru_cache(maxsize=1)
 def _get_keybert():
     """Load KeyBERT model once (lazy, cached as singleton)."""
-    from keybert import KeyBERT
-    # Uses sentence-transformers all-MiniLM-L6-v2 by default
-    return KeyBERT(model="all-MiniLM-L6-v2")
+    try:
+        from keybert import KeyBERT
+        # Uses sentence-transformers all-MiniLM-L6-v2 by default
+        return KeyBERT(model="all-MiniLM-L6-v2")
+    except Exception as e:
+        print(f"[KeyBERT] Warning: Could not initialize KeyBERT ({e}), using TF-IDF fallback")
+        return None
 
 
 @lru_cache(maxsize=1)

@@ -11,15 +11,19 @@ from sqlalchemy.exc import IntegrityError
 from app.config import get_settings
 from app.database import engine, Base
 from app.routers import auth, surveys, admin, locations
+from app.mongodb import init_mongo, close_mongo, check_mongo_health
 
 settings = get_settings()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Create database tables and pre-warm NLP models on startup."""
+    """Create database tables, initialize MongoDB connection, and pre-warm NLP models on startup."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    # Initialize MongoDB connection
+    await init_mongo()
 
     # Pre-load NLP singletons in background so first request is fast
     try:
@@ -33,6 +37,7 @@ async def lifespan(app: FastAPI):
 
     yield  # App running
 
+    await close_mongo()
     await engine.dispose()
 
 
@@ -49,7 +54,12 @@ app = FastAPI(
 # ─── CORS ────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+    ],
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -86,4 +96,9 @@ app.include_router(admin.router, prefix="/api")
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "app": settings.APP_NAME}
+    mongo_status = await check_mongo_health()
+    return {
+        "status": "ok",
+        "app": settings.APP_NAME,
+        "mongodb": mongo_status,
+    }

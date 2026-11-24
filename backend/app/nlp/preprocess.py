@@ -14,15 +14,20 @@ import nltk
 def _ensure_nltk():
     packages = {
         "tokenizers/punkt_tab": "punkt_tab",
+        "tokenizers/punkt": "punkt",
         "corpora/stopwords": "stopwords",
         "corpora/wordnet": "wordnet",
         "taggers/averaged_perceptron_tagger_eng": "averaged_perceptron_tagger_eng",
+        "taggers/averaged_perceptron_tagger": "averaged_perceptron_tagger",
     }
     for path, pkg in packages.items():
         try:
             nltk.data.find(path)
         except LookupError:
-            nltk.download(pkg, quiet=True)
+            try:
+                nltk.download(pkg, quiet=True)
+            except Exception:
+                pass
 
 _ensure_nltk()
 

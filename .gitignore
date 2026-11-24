@@ -1,6 +1,8 @@
 node_modules/
 __pycache__/
 *.py[cod]
+*.pyc
+*.db
 .env
 .env.*
 !.env.example

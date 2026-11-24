@@ -10,6 +10,10 @@ class Settings(BaseSettings):
     # --- Database ---
     DATABASE_URL: str = "sqlite+aiosqlite:///./campus_feedback.db"
 
+    # --- MongoDB Atlas ---
+    MONGODB_URL: str = "mongodb+srv://palhawas8_db_user:VRZfOjitAr4LhjPz@cluster0.1bx8exf.mongodb.net/?retryWrites=true&w=majority"
+    MONGODB_DB_NAME: str = "campus_feedback"
+
     # --- JWT ---
     SECRET_KEY: str = "change-me-in-production-use-openssl-rand-hex-32"
     ALGORITHM: str = "HS256"

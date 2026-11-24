@@ -27,6 +27,10 @@ export default function StudentLayout() {
                 <span className="hidden md:inline-flex text-[10px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full uppercase">
                   Student Portal
                 </span>
+                <span className="hidden xl:inline-flex items-center gap-1 text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  MongoDB Atlas Connected
+                </span>
               </div>
               <p className="text-[11px] text-slate-500 leading-tight">
                 J.C. Bose University of Science &amp; Technology, YMCA, Faridabad

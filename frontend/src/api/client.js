@@ -1,7 +1,10 @@
 import axios from 'axios'
 
+// Dynamically use VITE_API_URL in production (Render), fallback to '/api' (Vite proxy) in local dev
+const apiBase = import.meta.env.VITE_API_URL || '/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: apiBase,
   headers: { 'Content-Type': 'application/json' },
 })
 

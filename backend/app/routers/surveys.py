@@ -10,6 +10,7 @@ from app import models, schemas
 from app.auth import get_current_user
 from app.database import get_db
 from app.nlp.pipeline import analyze
+from app.mongodb import mongo_sync_survey
 
 router = APIRouter(prefix="/surveys", tags=["Surveys"])
 
@@ -24,7 +25,8 @@ async def submit_survey(
     loc_result = await db.execute(
         select(models.Location).where(models.Location.location_id == payload.location_id)
     )
-    if not loc_result.scalar_one_or_none():
+    target_location = loc_result.scalar_one_or_none()
+    if not target_location:
         raise HTTPException(status_code=404, detail="Location not found")
 
     # Persist survey
@@ -90,6 +92,49 @@ async def submit_survey(
         analysis=analysis_out,
         ticket=ticket_out,
     )
+
+    # Asynchronously sync to MongoDB Atlas
+    try:
+        loc_data = {
+            "location_id": target_location.location_id,
+            "block_name": target_location.block_name,
+            "floor": target_location.floor,
+            "room_number": target_location.room_number,
+        } if target_location else {}
+        user_data = {
+            "user_id": current_user.user_id,
+            "name": current_user.name,
+            "email": current_user.email,
+            "role": current_user.role,
+        }
+        await mongo_sync_survey(
+            survey_id=survey.survey_id,
+            user_id=current_user.user_id,
+            location_id=survey.location_id,
+            raw_text=survey.raw_text,
+            input_mode=survey.input_mode,
+            created_at=survey.created_at.isoformat() if survey.created_at else "",
+            analysis={
+                "analysis_id": analysis.analysis_id,
+                "cleaned_text": analysis.cleaned_text,
+                "extracted_keywords": kws if isinstance(kws, list) else [],
+                "sentiment_compound": analysis.sentiment_compound,
+                "urgency_score": analysis.urgency_score,
+                "urgency_level": analysis.urgency_level,
+                "assigned_dept": analysis.assigned_dept,
+            },
+            ticket={
+                "ticket_id": ticket.ticket_id,
+                "status": ticket.status,
+                "created_at": ticket.created_at.isoformat() if ticket.created_at else "",
+                "resolved_at": ticket.resolved_at.isoformat() if ticket.resolved_at else None,
+            },
+            location_info=loc_data,
+            user_info=user_data,
+        )
+    except Exception as e:
+        # Non-blocking sync error
+        pass
 
     return schemas.SurveySubmitResponse(
         survey=survey_out,

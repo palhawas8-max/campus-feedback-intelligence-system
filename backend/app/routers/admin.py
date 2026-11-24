@@ -15,6 +15,7 @@ from sqlalchemy.orm import selectinload
 from app import models, schemas
 from app.auth import require_admin
 from app.database import get_db
+from app.mongodb import mongo_update_ticket_status
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -295,4 +296,15 @@ async def update_ticket_status(
 
     await db.commit()
     await db.refresh(ticket)
+
+    # Sync to MongoDB Atlas
+    try:
+        await mongo_update_ticket_status(
+            ticket.ticket_id,
+            ticket.status,
+            ticket.resolved_at.isoformat() if ticket.resolved_at else None,
+        )
+    except Exception:
+        pass
+
     return ticket

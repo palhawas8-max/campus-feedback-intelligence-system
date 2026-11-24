@@ -275,8 +275,14 @@ export default function AdminDashboard() {
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 uppercase tracking-wider mb-1">
-            <span>📊</span> Maintenance Command &amp; Analytics
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 uppercase tracking-wider">
+              <span>📊</span> Maintenance Command &amp; Analytics
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              MongoDB Atlas: Active
+            </span>
           </div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Executive Campus Dashboard</h2>
         </div>

@@ -95,14 +95,32 @@ The intelligence engine lives in `backend/app/nlp/` and executes the following s
 
 ---
 
-## Demo Credentials
+## System Credentials
 
-| Role | Email | Password |
-|---|---|---|
-| **Student** | `student@demo.com` | `demo1234` |
-| **Admin** | `admin@demo.com` | `demo1234` |
+| Role | Email | Password | Description |
+|---|---|---|---|
+| **Student** | `student@jcboseust.ac.in` | `password123` | Student submission portal access |
+| **Admin** | `admin@jcboseust.ac.in` | `password123` | Executive campus command & analytics dashboard |
 
-*(Pre-populated with 15 campus locations across Block A, Block B, Block C, Library, and Labs, and 60 realistic feedback entries spread across the last 60 days).*
+*(Pre-populated with 38 locations across 6 campus departments/blocks and 60+ realistic feedback entries analyzed and routed across the last 60 days).*
+
+---
+
+## Cloud Database Integration: MongoDB Atlas
+
+The system is connected to MongoDB Atlas Cloud Cluster (`cluster0.1bx8exf.mongodb.net`) with dual-persistence architecture:
+- **Fast Local Queries**: Relational database (SQLite/PostgreSQL) with async SQLAlchemy ORM.
+- **Cloud Document Sync**: MongoDB Atlas (`campus_feedback` database) stores documents in 4 collections:
+  - `users`: User profiles and role permissions.
+  - `locations`: Campus blocks, floors, and rooms.
+  - `surveys`: Surveys with complete NLP analysis payloads (keywords, urgency, sentiment polarity, and department routing).
+  - `issue_tickets`: Tickets with live status tracking (`Pending`, `In Progress`, `Resolved`).
+
+To re-sync all database records to MongoDB Atlas at any time:
+```bash
+cd backend
+python sync_mongo.py
+```
 
 ---
 
