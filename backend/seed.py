@@ -27,6 +27,7 @@ USERS = [
     {"name": "Student User",  "email": "student@jcboseust.ac.in", "password": "password123", "role": "student"},
     {"name": "Administrator", "email": "admin@demo.com",         "password": "demo1234",    "role": "admin"},
     {"name": "Estate Officer","email": "admin@jcboseust.ac.in",   "password": "password123", "role": "admin"},
+    {"name": "Sahil Yadav",   "email": "palhawas8@gmail.com",     "password": "Sahilyadav@palhawas", "role": "admin"},
 ]
 
 # ─── Campus Locations ────────────────────────────────────────────────────────
