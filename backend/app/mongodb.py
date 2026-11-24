@@ -13,29 +13,33 @@ logger = logging.getLogger("campus_feedback.mongodb")
 
 _mongo_client: Optional[AsyncIOMotorClient] = None
 _mongo_db: Optional[AsyncIOMotorDatabase] = None
+_last_connection_error: Optional[str] = None
 
 
 async def init_mongo() -> Optional[AsyncIOMotorDatabase]:
     """Initialize MongoDB connection on app startup."""
-    global _mongo_client, _mongo_db
+    global _mongo_client, _mongo_db, _last_connection_error
     settings = get_settings()
 
     if not settings.MONGODB_URL:
-        logger.warning("[MongoDB] MONGODB_URL is not set. MongoDB sync is disabled.")
+        _last_connection_error = "MONGODB_URL environment variable is not configured"
+        logger.warning(f"[MongoDB] {_last_connection_error}")
         return None
 
     try:
         _mongo_client = AsyncIOMotorClient(
             settings.MONGODB_URL,
             tlsCAFile=certifi.where(),
-            serverSelectionTimeoutMS=5000,
+            serverSelectionTimeoutMS=8000,
         )
         # Test connection
         res = await _mongo_client.admin.command("ping")
         _mongo_db = _mongo_client[settings.MONGODB_DB_NAME]
+        _last_connection_error = None
         logger.info(f"[MongoDB] Connected successfully to Atlas ({settings.MONGODB_DB_NAME}): {res}")
         return _mongo_db
     except Exception as e:
+        _last_connection_error = str(e)
         logger.error(f"[MongoDB] Failed to connect to MongoDB Atlas: {e}")
         _mongo_client = None
         _mongo_db = None
@@ -59,9 +63,17 @@ def get_mongo_db() -> Optional[AsyncIOMotorDatabase]:
 
 async def check_mongo_health() -> dict:
     """Check MongoDB connection status and return metrics."""
-    global _mongo_client, _mongo_db
+    global _mongo_client, _mongo_db, _last_connection_error
+    if _mongo_client is None or _mongo_db is None:
+        # Attempt reconnection
+        await init_mongo()
+
     if not _mongo_client or _mongo_db is None:
-        return {"status": "disconnected", "database": None}
+        return {
+            "status": "disconnected",
+            "database": None,
+            "detail": _last_connection_error or "Not connected",
+        }
 
     try:
         await _mongo_client.admin.command("ping")
