@@ -22,8 +22,9 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    # Initialize MongoDB connection
-    await init_mongo()
+    # Initialize MongoDB connection in background so server starts instantly
+    import asyncio
+    asyncio.create_task(init_mongo())
 
     # Pre-load NLP singletons in background so first request is fast
     try:
