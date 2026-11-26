@@ -65,8 +65,11 @@ async def check_mongo_health() -> dict:
     """Check MongoDB connection status and return metrics."""
     global _mongo_client, _mongo_db, _last_connection_error
     if _mongo_client is None or _mongo_db is None:
-        # Attempt reconnection
-        await init_mongo()
+        return {
+            "status": "disconnected",
+            "database": None,
+            "detail": _last_connection_error or "Not connected",
+        }
 
     if not _mongo_client or _mongo_db is None:
         return {
