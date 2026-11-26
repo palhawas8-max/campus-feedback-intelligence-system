@@ -78,7 +78,7 @@ The intelligence engine lives in `backend/app/nlp/` and executes the following s
 4. **Department Routing (`routing.py`)**:
    - Matches keywords and tokens against taxonomy dictionaries for university wings:
      - **Electrical Maintenance Wing**: switchboard, wire, fan, light, short circuit, power, socket, AC, voltage, spark, tripping.
-     - **Public Health and Civil Works**: leakage, water, washroom, toilet, wall, ceiling, bench, furniture, drain, cleanliness, slippery.
+     - **Maintenance Department**: leakage, leak, water, washroom, toilet, dirty, ceiling, crack, bench, chair, furniture, door, window, drain, wall, cleanliness, floor, slippery.
      - **IT Services**: projector, wifi, internet, computer, lab pc, network, software, display, monitor.
      - **General Administration**: Fallback category.
    - Multi-word phrases receive higher weight (2 points) compared to single terms (1 point). The department with the highest score is assigned.
@@ -204,9 +204,9 @@ docker-compose exec backend python seed.py
 
 The system has been verified against the standard test cases:
 
-1. **Sample 1 (Civil Works)**
+1. **Sample 1 (Maintenance)**
    - *Input*: `"There is water leakage in the ceiling of Lab 3 and the floor is very slippery"`
-   - *Result*: Assigned to **Public Health and Civil Works**, Urgency: **High**
+   - *Result*: Assigned to **Maintenance Department**, Urgency: **High**
 2. **Sample 2 (IT Services)**
    - *Input*: `"The projector in room 204 is not working and the wifi is very slow"`
    - *Result*: Assigned to **IT Services**, Urgency: **Medium**

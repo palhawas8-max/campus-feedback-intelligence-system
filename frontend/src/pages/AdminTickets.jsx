@@ -11,9 +11,9 @@ const URGENCY_OPTIONS = ['', 'Low', 'Medium', 'High', 'Critical']
 const DEPT_OPTIONS = [
   '',
   'Electrical Maintenance Wing',
-  'Public Health and Civil Works',
+  'Maintenance Department',
   'IT Services',
-  'General Administration',
+  'Unassigned',
 ]
 
 const BLOCK_OPTIONS = [

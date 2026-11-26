@@ -227,7 +227,7 @@ async def seed():
                     "sentiment_compound": -0.3,
                     "urgency_score": 0.6,
                     "urgency_level": "Medium",
-                    "assigned_dept": "General Administration",
+                    "assigned_dept": "Unassigned",
                 }
 
             survey = Survey(

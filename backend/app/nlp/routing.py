@@ -13,13 +13,13 @@ _TAXONOMY: dict[str, list[str]] = {
         "fuse", "plug", "current", "voltage", "spark", "sparks",
         "tripping", "circuit", "board",
     ],
-    "Public Health and Civil Works": [
+    "Maintenance Department": [
         "leakage", "leaking", "leak", "water", "washroom", "toilet",
-        "bathroom", "wall", "ceiling", "bench", "benches", "furniture",
-        "drain", "drainage", "cleanliness", "dirty", "clean", "floor",
-        "slippery", "damp", "mould", "mold", "paint", "crack", "cracks",
-        "broken door", "door", "window", "seepage", "flood", "flooding",
-        "garbage", "waste", "smell", "smells", "odor",
+        "bathroom", "wall", "ceiling", "bench", "benches", "chair", "chairs",
+        "furniture", "door", "window", "drain", "drainage", "crack", "cracks",
+        "dirty", "cleanliness", "floor", "slippery", "damp", "mould", "mold",
+        "paint", "broken door", "seepage", "flood", "flooding", "garbage",
+        "waste", "smell", "smells", "odor",
     ],
     "IT Services": [
         "projector", "wifi", "wi-fi", "internet", "computer", "computers",
@@ -30,7 +30,7 @@ _TAXONOMY: dict[str, list[str]] = {
     ],
 }
 
-_FALLBACK = "General Administration"
+_FALLBACK = "Unassigned"
 
 
 def route_department(text: str, tokens: list[str]) -> str:

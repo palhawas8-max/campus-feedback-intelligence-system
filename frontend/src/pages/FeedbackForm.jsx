@@ -23,7 +23,7 @@ const getBlockIcon = (name) => {
 // Department patterns for live real-time analysis
 const DEPT_PATTERNS = {
   'Electrical Maintenance Wing': ['switchboard', 'wire', 'fan', 'light', 'short circuit', 'power', 'socket', 'ac', 'voltage', 'spark', 'electric', 'fuse', 'tripping', 'meter'],
-  'Public Health and Civil Works': ['leakage', 'water', 'washroom', 'toilet', 'wall', 'ceiling', 'bench', 'furniture', 'drain', 'cleanliness', 'tap', 'door', 'window', 'slippery', 'plumbing', 'seepage'],
+  'Maintenance Department': ['leakage', 'leak', 'water', 'washroom', 'toilet', 'dirty', 'ceiling', 'crack', 'bench', 'chair', 'furniture', 'door', 'window', 'drain', 'wall', 'cleanliness', 'tap', 'slippery', 'plumbing', 'seepage'],
   'IT Services': ['projector', 'wifi', 'internet', 'computer', 'lab pc', 'network', 'software', 'display', 'screen', 'lan', 'system', 'printer', 'audio', 'server'],
 }
 
@@ -106,7 +106,7 @@ export default function FeedbackForm() {
 
     const detectedHazards = HAZARD_TERMS.filter((h) => raw.includes(h))
 
-    let bestDept = 'General Administration'
+    let bestDept = 'Unassigned'
     let bestCount = 0
     for (const [dept, terms] of Object.entries(DEPT_PATTERNS)) {
       const count = terms.filter((t) => raw.includes(t)).length

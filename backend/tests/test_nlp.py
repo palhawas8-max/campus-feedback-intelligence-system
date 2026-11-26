@@ -73,11 +73,21 @@ class TestUrgency:
 
 class TestRouting:
 
-    def test_water_routes_civil(self):
+    def test_water_routes_maintenance(self):
         text = "water leakage in ceiling floor slippery"
         tokens = ["water", "leakage", "ceiling", "floor", "slippery"]
         dept = route_department(text, tokens)
-        assert dept == "Public Health and Civil Works"
+        assert dept == "Maintenance Department"
+
+    def test_chair_dirty_routes_maintenance(self):
+        dept1 = route_department("chair is broken in room 204", ["chair", "broken", "room"])
+        assert dept1 == "Maintenance Department"
+        dept2 = route_department("washroom is very dirty", ["washroom", "dirty"])
+        assert dept2 == "Maintenance Department"
+
+    def test_canteen_clean_unassigned(self):
+        dept = route_department("canteen clean and staff helpful", ["canteen", "clean", "staff", "helpful"])
+        assert dept == "Unassigned"
 
     def test_projector_wifi_routes_it(self):
         text = "projector not working and wifi very slow"
@@ -97,11 +107,11 @@ class TestRouting:
 class TestPipeline:
 
     def test_pipeline_water_leakage(self):
-        """Sample 1: Water leakage → Civil, High or above."""
+        """Sample 1: Water leakage → Maintenance, High or above."""
         result = analyze(
             "There is water leakage in the ceiling of Lab 3 and the floor is very slippery"
         )
-        assert result["assigned_dept"] == "Public Health and Civil Works"
+        assert result["assigned_dept"] == "Maintenance Department"
         assert result["urgency_level"] in ("Medium", "High", "Critical")
         assert isinstance(result["keywords"], list)
         assert len(result["keywords"]) >= 1
