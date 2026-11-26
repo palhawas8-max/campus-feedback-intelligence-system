@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/client'
@@ -18,6 +18,28 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [serverStatus, setServerStatus] = useState('checking') // 'checking' | 'online' | 'waking'
+  const [waitTimer, setWaitTimer] = useState(0)
+
+  // Wake-up ping on mount to pre-warm cold backend
+  useEffect(() => {
+    let mounted = true
+    api.get('/health', { timeout: 15000 })
+      .then(() => { if (mounted) setServerStatus('online') })
+      .catch(() => { if (mounted) setServerStatus('waking') })
+    return () => { mounted = false }
+  }, [])
+
+  // Timer while loading to inform user of cold start
+  useEffect(() => {
+    let t = null
+    if (loading) {
+      t = setInterval(() => setWaitTimer((prev) => prev + 1), 1000)
+    } else {
+      setWaitTimer(0)
+    }
+    return () => { if (t) clearInterval(t) }
+  }, [loading])
 
   // Switch between Student and Admin Portal tabs without auto-filling
   const switchPortal = (role) => {
@@ -54,7 +76,12 @@ export default function Login() {
       toast.success(`Welcome, ${res.data.name}!`)
       navigate(res.data.role === 'admin' ? '/admin' : '/feedback')
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Invalid email or password. Please try again.')
+      const errorMsg =
+        err.response?.data?.detail ||
+        (err.code === 'ECONNABORTED' || err.message?.includes('Network Error') || err.message?.includes('timeout')
+          ? 'Cloud server is spinning up from cold sleep mode. Please wait a few seconds and try again.'
+          : 'Invalid email or password. Please try again.')
+      toast.error(errorMsg)
     } finally {
       setLoading(false)
     }
@@ -75,6 +102,21 @@ export default function Login() {
           <p className="text-xs sm:text-sm text-slate-600 font-medium">
             Automated Facility Complaint Analysis &amp; Departmental Dispatch
           </p>
+        </div>
+
+        {/* Backend Connectivity Status Pill */}
+        <div className="flex justify-center -mb-2">
+          {serverStatus === 'online' ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              API Service: Online &amp; Ready
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+              Checking Cloud Backend Connectivity...
+            </span>
+          )}
         </div>
 
         {/* Login Card with Portal Switcher */}
@@ -201,6 +243,12 @@ export default function Login() {
                 `Sign in to ${activePortal === 'student' ? 'Student Portal' : 'Admin Portal'}`
               )}
             </button>
+
+            {waitTimer >= 3 && (
+              <div className="mt-2 text-center text-xs text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200 animate-pulse">
+                ⏳ Connecting to server... Free-tier cloud instances take ~30-45s to wake up on first visit ({waitTimer}s elapsed). Please hold on!
+              </div>
+            )}
           </form>
 
           {/* Registration Link */}
